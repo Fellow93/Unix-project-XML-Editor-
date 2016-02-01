@@ -38,19 +38,18 @@ import org.xml.sax.SAXException;
  *
  * @author rsys
  */
-public class Main extends javax.swing.JFrame {
+public class SemestralkaUniXml extends javax.swing.JFrame {
     
-    private boolean isSavingDead = false;
     private String encoding;
     private String xmlVersion;
     private String standalone;
     private boolean xmlLoaded = false;
-    Document savedDocument;
+    Document savedDocument; 
     StringTree xmlList;
-    private String aXmlFilePath = "simple.xml";
+    private String aXmlFilePath = "main.xml";
     Pattern INVALID_XML_CHARS = Pattern.compile("[^\\u0009\\u000A\\u000D\\u0020-\\uD7FF\\uE000-\\uFFFD\uD800\uDC00-\uDBFF\uDFFF]");
     
-    public Main() {
+    public SemestralkaUniXml() {
         initComponents();
         if(!parseFileToXmlTree(aXmlFilePath)){
             menuItemViewXmlInfo.setEnabled(false);
@@ -90,6 +89,9 @@ public class Main extends javax.swing.JFrame {
             return true;
         } catch(ParserConfigurationException | SAXException | IOException e){
             System.out.println(e);
+            DefaultMutableTreeNode root = new DefaultMutableTreeNode("");
+            DefaultTreeModel model = new DefaultTreeModel(root);
+            treeXml.setModel(model);
             return false;
         }
     }
@@ -119,8 +121,8 @@ public class Main extends javax.swing.JFrame {
             if (nodes.item(i) instanceof Element) {
                 StringTree newXmlList  = new StringTree(nodes.item(i).getNodeName());
                 xmlList.getStringList().add(newXmlList);
-                
-                if(!nodes.item(i).getTextContent().split("")[0].trim().equals("")){
+                String trimStrin = nodes.item(i).getTextContent().split(" ")[0].trim();
+                if(!trimStrin.split("   ")[0].equals("")){
                    StringTree child = new StringTree(nodes.item(i).getTextContent().split("   ")[0]);
                    child.setIsValue(true);
                    newXmlList.getStringList().add(child);
@@ -375,8 +377,8 @@ public class Main extends javax.swing.JFrame {
    private Element createXmlFile(TreeModel model, Object node,Element elem) throws Exception {
     try{
        if(model.getChildCount(node) == 0){
-        elem.setTextContent(node.toString());
-        return elem;
+           elem.setTextContent(node.toString());
+           return elem;
     }else{
         Element el = savedDocument.createElement(node.toString());
         for(int i=0;i<model.getChildCount(node);i++){
@@ -394,24 +396,6 @@ public class Main extends javax.swing.JFrame {
         throw  new Exception("chyba");
     }
    }
-    
-    /*private void createXmlFile(Element rootElem,DefaultMutableTreeNode root){
-        if(!root.isLeaf()){
-            if(root.getSiblingCount()-1 != 0){
-                System.out.println("tusom");
-            }else{
-                for(int i = 0; i < root.getChildCount(); i++){
-                   String elemString = root.getChildAt(i).toString();
-                   Element newElem = savedDocument.createElement(elemString);
-                   rootElem.appendChild(newElem);
-                   createXmlFile(newElem,(DefaultMutableTreeNode)root.getChildAt(i));
-                }
-            }
-        }else{
-            String elemString = root.toString().replace(" ", "_");
-            rootElem.appendChild(savedDocument.createTextNode(elemString));
-        }
-    }*/
     
     private void menuItemSaveXmlActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_menuItemSaveXmlActionPerformed
         DefaultMutableTreeNode root = ((DefaultMutableTreeNode) treeXml.getModel().getRoot()).getNextNode();
@@ -445,7 +429,7 @@ public class Main extends javax.swing.JFrame {
     private void addChildButtonActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_addChildButtonActionPerformed
          if(!treeXml.isSelectionEmpty()){
              DefaultMutableTreeNode node = (DefaultMutableTreeNode) treeXml.getLastSelectedPathComponent();
-             node.add(new DefaultMutableTreeNode("New Child"));
+             node.add(new DefaultMutableTreeNode("New_Child"));
              treeXml.updateUI();
          }
     }//GEN-LAST:event_addChildButtonActionPerformed
@@ -454,7 +438,7 @@ public class Main extends javax.swing.JFrame {
         if(!treeXml.isSelectionEmpty()){
              DefaultMutableTreeNode node = (DefaultMutableTreeNode) treeXml.getLastSelectedPathComponent();
              if(!node.isRoot()){
-                ((DefaultMutableTreeNode)node.getParent()).add(new DefaultMutableTreeNode("New Sibling"));
+                ((DefaultMutableTreeNode)node.getParent()).add(new DefaultMutableTreeNode("New_Sibling"));
                 treeXml.updateUI();
              }
             
@@ -489,20 +473,21 @@ public class Main extends javax.swing.JFrame {
                 }
             }
         } catch (ClassNotFoundException ex) {
-            java.util.logging.Logger.getLogger(Main.class.getName()).log(java.util.logging.Level.SEVERE, null, ex);
+            java.util.logging.Logger.getLogger(SemestralkaUniXml.class.getName()).log(java.util.logging.Level.SEVERE, null, ex);
         } catch (InstantiationException ex) {
-            java.util.logging.Logger.getLogger(Main.class.getName()).log(java.util.logging.Level.SEVERE, null, ex);
+            java.util.logging.Logger.getLogger(SemestralkaUniXml.class.getName()).log(java.util.logging.Level.SEVERE, null, ex);
         } catch (IllegalAccessException ex) {
-            java.util.logging.Logger.getLogger(Main.class.getName()).log(java.util.logging.Level.SEVERE, null, ex);
+            java.util.logging.Logger.getLogger(SemestralkaUniXml.class.getName()).log(java.util.logging.Level.SEVERE, null, ex);
         } catch (javax.swing.UnsupportedLookAndFeelException ex) {
-            java.util.logging.Logger.getLogger(Main.class.getName()).log(java.util.logging.Level.SEVERE, null, ex);
+            java.util.logging.Logger.getLogger(SemestralkaUniXml.class.getName()).log(java.util.logging.Level.SEVERE, null, ex);
         }
+        //</editor-fold>
         //</editor-fold>
 
         /* Create and display the form */
         java.awt.EventQueue.invokeLater(new Runnable() {
             public void run() {
-                new Main().setVisible(true);
+                new SemestralkaUniXml().setVisible(true);
             }
         });
     }
