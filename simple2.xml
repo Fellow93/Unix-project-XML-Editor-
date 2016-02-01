@@ -1,0 +1,20 @@
+<?xml version="1.0" encoding="UTF-8" standalone="no"?>
+<root>
+    <main>
+        <Common>
+            <CentralSystemServer>
+                <Main>
+                    <Hostname>localhost</Hostname>
+                </Main>
+                <Backup>
+                    <Hostname>localhost</Hostname>
+                </Backup>
+                <SmonServer>
+                    <ProcessInfoInterval>30</ProcessInfoInterval>
+                    <UdpClientPort>50205</UdpClientPort>
+                    <TcpClientPort>50205</TcpClientPort>
+                </SmonServer>
+            </CentralSystemServer>
+        </Common>
+    </main>
+</root>

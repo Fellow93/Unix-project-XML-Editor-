@@ -5,6 +5,7 @@
  */
 package semestralkaunixml;
 
+import java.awt.event.KeyEvent;
 import java.awt.event.WindowAdapter;
 import java.awt.event.WindowEvent;
 import java.io.IOException;
@@ -13,7 +14,6 @@ import javax.swing.JOptionPane;
 import javax.swing.filechooser.FileNameExtensionFilter;
 import java.io.File;
 import java.util.regex.Pattern;
-import javax.swing.JFrame;
 import javax.swing.tree.DefaultMutableTreeNode;
 import javax.swing.tree.DefaultTreeModel;
 import javax.swing.tree.TreeModel;
@@ -33,11 +33,6 @@ import org.w3c.dom.Node;
 import org.w3c.dom.NodeList;
 import org.xml.sax.SAXException;
 
-
-/**
- *
- * @author rsys
- */
 public class SemestralkaUniXml extends javax.swing.JFrame {
     
     private String encoding;
@@ -51,6 +46,25 @@ public class SemestralkaUniXml extends javax.swing.JFrame {
     
     public SemestralkaUniXml() {
         initComponents();
+        this.setDefaultCloseOperation(this.DO_NOTHING_ON_CLOSE);
+        addWindowListener(new WindowAdapter() {
+        @Override
+        public void windowClosing(WindowEvent we){ 
+              String ObjButtons[] = {"No","Yes"};
+              int PromptResult = JOptionPane.showOptionDialog(null, 
+                  "Are you sure you want to exit? Don't forget to save your work !", "", 
+                  JOptionPane.DEFAULT_OPTION, JOptionPane.WARNING_MESSAGE, null, 
+                  ObjButtons,ObjButtons[0]);
+              
+              if(PromptResult==1){
+                  System.out.println(PromptResult);
+                System.exit(0);          
+              }
+            }
+        });
+        
+        deleteNodeButton.setMnemonic(KeyEvent.VK_D);
+        addChildButton.setMnemonic(KeyEvent.VK_E);
         if(!parseFileToXmlTree(aXmlFilePath)){
             menuItemViewXmlInfo.setEnabled(false);
         } else {
@@ -148,11 +162,13 @@ public class SemestralkaUniXml extends javax.swing.JFrame {
         jLabel4 = new javax.swing.JLabel();
         addSiblingButton = new javax.swing.JButton();
         addSiblingCopy = new javax.swing.JButton();
+        deleteNodeButton = new javax.swing.JButton();
         jMenuBar1 = new javax.swing.JMenuBar();
         menuFile = new javax.swing.JMenu();
         menuItemNewXml = new javax.swing.JMenuItem();
         menuItemOpenXml = new javax.swing.JMenuItem();
         menuItemSaveXml = new javax.swing.JMenuItem();
+        menuItemSaveAsXml = new javax.swing.JMenuItem();
         menuItemViewXmlInfo = new javax.swing.JMenuItem();
         menuHelp = new javax.swing.JMenu();
         menuItemAbout = new javax.swing.JMenuItem();
@@ -220,6 +236,13 @@ public class SemestralkaUniXml extends javax.swing.JFrame {
             }
         });
 
+        deleteNodeButton.setText("Delete Node");
+        deleteNodeButton.addActionListener(new java.awt.event.ActionListener() {
+            public void actionPerformed(java.awt.event.ActionEvent evt) {
+                deleteNodeButtonActionPerformed(evt);
+            }
+        });
+
         menuFile.setText("File");
 
         menuItemNewXml.setAccelerator(javax.swing.KeyStroke.getKeyStroke(java.awt.event.KeyEvent.VK_N, java.awt.event.InputEvent.CTRL_MASK));
@@ -248,6 +271,14 @@ public class SemestralkaUniXml extends javax.swing.JFrame {
             }
         });
         menuFile.add(menuItemSaveXml);
+
+        menuItemSaveAsXml.setText("Save Xml as");
+        menuItemSaveAsXml.addActionListener(new java.awt.event.ActionListener() {
+            public void actionPerformed(java.awt.event.ActionEvent evt) {
+                menuItemSaveAsXmlActionPerformed(evt);
+            }
+        });
+        menuFile.add(menuItemSaveAsXml);
 
         menuItemViewXmlInfo.setAccelerator(javax.swing.KeyStroke.getKeyStroke(java.awt.event.KeyEvent.VK_I, java.awt.event.InputEvent.CTRL_MASK));
         menuItemViewXmlInfo.setText("View/Edit XML Info");
@@ -288,7 +319,8 @@ public class SemestralkaUniXml extends javax.swing.JFrame {
                     .addGroup(layout.createSequentialGroup()
                         .addComponent(addChildButton)
                         .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
-                        .addComponent(addSiblingButton)))
+                        .addComponent(addSiblingButton))
+                    .addComponent(deleteNodeButton))
                 .addGap(136, 136, 136))
         );
         layout.setVerticalGroup(
@@ -308,7 +340,8 @@ public class SemestralkaUniXml extends javax.swing.JFrame {
                             .addComponent(addSiblingButton))
                         .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
                         .addComponent(addSiblingCopy)
-                        .addGap(39, 39, 39))
+                        .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
+                        .addComponent(deleteNodeButton))
                     .addComponent(jScrollPane1, javax.swing.GroupLayout.DEFAULT_SIZE, 456, Short.MAX_VALUE))
                 .addGap(18, 18, 18))
         );
@@ -417,7 +450,7 @@ public class SemestralkaUniXml extends javax.swing.JFrame {
 
             transformer.transform(source, result);
 
-            System.out.println("File saved!");
+            JOptionPane.showMessageDialog(this, "File successfully saved !");
 
       } catch (ParserConfigurationException | TransformerException pce) {
       } catch (Exception ex) {
@@ -456,6 +489,59 @@ public class SemestralkaUniXml extends javax.swing.JFrame {
          }
     }//GEN-LAST:event_addSiblingCopyActionPerformed
 
+    private void menuItemSaveAsXmlActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_menuItemSaveAsXmlActionPerformed
+        JFileChooser fileChooser = new JFileChooser();
+        fileChooser.setDialogType(JFileChooser.SAVE_DIALOG);
+        FileNameExtensionFilter filter = new FileNameExtensionFilter("XML File", "xml");
+        fileChooser.setFileFilter(filter);
+        fileChooser.setAcceptAllFileFilterUsed(false);
+        fileChooser.setCurrentDirectory(new File(System.getProperty("user.home")));
+        int resultt = fileChooser.showSaveDialog(this);
+        if (resultt == JFileChooser.APPROVE_OPTION) {
+            aXmlFilePath = fileChooser.getSelectedFile().getAbsolutePath();
+            DefaultMutableTreeNode root = ((DefaultMutableTreeNode) treeXml.getModel().getRoot()).getNextNode();
+            try {
+
+                DocumentBuilderFactory docFactory = DocumentBuilderFactory.newInstance();
+                DocumentBuilder docBuilder = docFactory.newDocumentBuilder();
+
+                savedDocument = docBuilder.newDocument();
+                Element rootElement = createXmlFile(treeXml.getModel(), root,null);
+                savedDocument.appendChild(rootElement);
+
+                TransformerFactory transformerFactory = TransformerFactory.newInstance();
+                Transformer transformer = transformerFactory.newTransformer();
+                transformer.setOutputProperty(OutputKeys.INDENT, "yes");
+                transformer.setOutputProperty("{http://xml.apache.org/xslt}indent-amount", "4");
+                DOMSource source = new DOMSource(savedDocument);
+                StreamResult result;
+                if(aXmlFilePath.contains(".xml")){
+                   result = new StreamResult(new File(aXmlFilePath));
+                }else{
+                   result = new StreamResult(new File(aXmlFilePath+".xml"));
+                }
+                
+
+                transformer.transform(source, result);
+
+                JOptionPane.showMessageDialog(this, "File successfully saved !");
+
+          } catch (ParserConfigurationException | TransformerException pce) {
+          } catch (Exception ex) {
+                JOptionPane.showMessageDialog(this, "File coludn't be saved beacause you used invalid XML characters in node name");
+            }
+        }
+    }//GEN-LAST:event_menuItemSaveAsXmlActionPerformed
+
+    private void deleteNodeButtonActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_deleteNodeButtonActionPerformed
+        if(!treeXml.isSelectionEmpty()){
+             DefaultMutableTreeNode node = (DefaultMutableTreeNode) treeXml.getLastSelectedPathComponent();
+             node.removeAllChildren();
+             node.removeFromParent();
+             treeXml.updateUI();
+         }
+    }//GEN-LAST:event_deleteNodeButtonActionPerformed
+
     /**
      * @param args the command line arguments
      */
@@ -486,6 +572,7 @@ public class SemestralkaUniXml extends javax.swing.JFrame {
 
         /* Create and display the form */
         java.awt.EventQueue.invokeLater(new Runnable() {
+            @Override
             public void run() {
                 new SemestralkaUniXml().setVisible(true);
             }
@@ -496,6 +583,7 @@ public class SemestralkaUniXml extends javax.swing.JFrame {
     private javax.swing.JButton addChildButton;
     private javax.swing.JButton addSiblingButton;
     private javax.swing.JButton addSiblingCopy;
+    private javax.swing.JButton deleteNodeButton;
     private javax.swing.JLabel jLabel1;
     private javax.swing.JLabel jLabel4;
     private javax.swing.JMenuBar jMenuBar1;
@@ -505,6 +593,7 @@ public class SemestralkaUniXml extends javax.swing.JFrame {
     private javax.swing.JMenuItem menuItemAbout;
     private javax.swing.JMenuItem menuItemNewXml;
     private javax.swing.JMenuItem menuItemOpenXml;
+    private javax.swing.JMenuItem menuItemSaveAsXml;
     private javax.swing.JMenuItem menuItemSaveXml;
     private javax.swing.JMenuItem menuItemViewXmlInfo;
     private javax.swing.JTextField nameText;
